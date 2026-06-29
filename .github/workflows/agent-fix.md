@@ -28,7 +28,10 @@ tools:
   github:
     toolsets: [default]
     min-integrity: none
-  bash: true
+  edit: false
+  bash:
+    - python *
+    - python3 *
 
 safe-outputs:
   push-to-pull-request-branch:
