@@ -28,7 +28,6 @@ tools:
   github:
     toolsets: [default]
     min-integrity: none
-  edit:
   bash: true
 
 safe-outputs:
@@ -62,6 +61,7 @@ You are the implementation agent for approved issue #${{ github.event.issue.numb
 - Modify only `src/**` and `tests/**`.
 - Do not modify `.github/**`, `AGENTS.md`, `README.md`, dependency manifests, or secrets.
 - Keep the PR focused on the issue request.
+- Use shell commands to inspect and update files. Do not use the Edit tool.
 - Run `python -m unittest discover` before creating the PR.
 
 ## Steps

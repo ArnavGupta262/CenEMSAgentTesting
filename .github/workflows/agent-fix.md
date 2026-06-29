@@ -28,7 +28,6 @@ tools:
   github:
     toolsets: [default]
     min-integrity: none
-  edit:
   bash: true
 
 safe-outputs:
@@ -62,6 +61,7 @@ You are updating an existing agent-generated PR after a maintainer requested
 - Modify only `src/**` and `tests/**`.
 - Do not modify `.github/**`, `AGENTS.md`, `README.md`, dependency manifests, or secrets.
 - Address review feedback without broad refactors.
+- Use shell commands to inspect and update files. Do not use the Edit tool.
 
 ## Steps
 
