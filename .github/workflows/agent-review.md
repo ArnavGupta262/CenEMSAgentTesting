@@ -13,6 +13,7 @@ permissions:
   contents: read
   pull-requests: read
   actions: read
+  copilot-requests: write
 
 engine: copilot
 network: defaults

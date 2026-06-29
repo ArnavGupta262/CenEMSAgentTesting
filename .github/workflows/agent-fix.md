@@ -9,7 +9,12 @@ on:
     strategy: centralized
   reaction: "eyes"
 
-permissions: read-all
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  actions: read
+  copilot-requests: write
 
 engine: copilot
 network:

@@ -9,7 +9,12 @@ on:
 
 if: "github.event.label.name == 'agent-approved' && contains(github.event.issue.labels.*.name, 'automation')"
 
-permissions: read-all
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  actions: read
+  copilot-requests: write
 
 engine: copilot
 network:
