@@ -7,7 +7,7 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
 
-if: "startsWith(github.event.pull_request.title, '[agent]')"
+if: "startsWith(github.event.pull_request.title, '[agent]') || github.event.pull_request.user.login == 'copilot-swe-agent' || github.event.pull_request.user.login == 'github-copilot[bot]'"
 
 permissions:
   contents: read
@@ -24,7 +24,10 @@ tools:
   github:
     toolsets: [pull_requests, repos]
     min-integrity: none
-  bash: true
+  edit: false
+  bash:
+    - python *
+    - python3 *
 
 safe-outputs:
   create-pull-request-review-comment:
