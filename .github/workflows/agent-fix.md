@@ -11,7 +11,7 @@ on:
 
 permissions: read-all
 
-engine: codex
+engine: copilot
 network:
   allowed:
     - defaults

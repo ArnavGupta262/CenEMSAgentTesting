@@ -14,7 +14,7 @@ permissions:
   pull-requests: read
   actions: read
 
-engine: codex
+engine: copilot
 network: defaults
 
 tools:

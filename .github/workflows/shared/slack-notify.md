@@ -21,7 +21,8 @@ safe-outputs:
 
             const webhook = process.env.SLACK_WEBHOOK_URL;
             if (!webhook) {
-              throw new Error("SLACK_WEBHOOK_URL secret is not configured");
+              console.log("SLACK_WEBHOOK_URL secret is not configured; skipping Slack notification.");
+              process.exit(0);
             }
 
             const outputPath = process.env.GH_AW_AGENT_OUTPUT;
