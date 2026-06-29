@@ -1,0 +1,63 @@
+name: Slack Human Events
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [opened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  notify-approval:
+    if: github.event_name == 'issues' && github.event.label.name == 'agent-approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          python - <<'PY' > /tmp/slack-payload.json
+          import json
+          import os
+
+          text = (
+              f"CenEMS agent pilot: issue #{os.environ['ISSUE_NUMBER']} was approved "
+              f"for implementation: {os.environ['ISSUE_TITLE']}\n{os.environ['ISSUE_URL']}"
+          )
+          print(json.dumps({"text": text}))
+          PY
+          curl --fail-with-body \
+            -H "content-type: application/json" \
+            --data @/tmp/slack-payload.json \
+            "$SLACK_WEBHOOK_URL"
+
+  notify-pr:
+    if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[agent]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python - <<'PY' > /tmp/slack-payload.json
+          import json
+          import os
+
+          text = (
+              f"CenEMS agent pilot: draft PR #{os.environ['PR_NUMBER']} is ready for review: "
+              f"{os.environ['PR_TITLE']}\n{os.environ['PR_URL']}"
+          )
+          print(json.dumps({"text": text}))
+          PY
+          curl --fail-with-body \
+            -H "content-type: application/json" \
+            --data @/tmp/slack-payload.json \
+            "$SLACK_WEBHOOK_URL"
