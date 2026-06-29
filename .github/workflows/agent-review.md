@@ -17,7 +17,7 @@ permissions:
 
 engine:
   id: copilot
-  model: auto
+  model: gpt-4o-mini
 network: defaults
 
 tools:
