@@ -11,7 +11,7 @@ if: "github.event.label.name == 'agent-approved' && contains(github.event.issue.
 
 permissions: read-all
 
-engine: codex
+engine: copilot
 network:
   allowed:
     - defaults
