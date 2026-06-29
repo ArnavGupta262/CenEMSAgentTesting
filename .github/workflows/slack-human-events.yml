@@ -21,6 +21,10 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL secret is not configured; skipping Slack notification."
+            exit 0
+          fi
           python - <<'PY' > /tmp/slack-payload.json
           import json
           import os
@@ -47,6 +51,10 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL secret is not configured; skipping Slack notification."
+            exit 0
+          fi
           python - <<'PY' > /tmp/slack-payload.json
           import json
           import os
