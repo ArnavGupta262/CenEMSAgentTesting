@@ -1,7 +1,7 @@
 ---
 description: |
-  Implements an approved automation issue and opens a draft PR through GitHub
-  Agentic Workflows safe outputs.
+  Assigns an approved automation issue to the GitHub Copilot cloud agent so it
+  can implement the task and open a pull request.
 
 on:
   issues:
@@ -18,32 +18,30 @@ permissions:
 
 engine:
   id: copilot
-  model: gpt-4o
-network:
-  allowed:
-    - defaults
-    - python
+  model: gpt-4o-mini
+network: defaults
 
 tools:
   github:
-    toolsets: [default]
+    toolsets: [issues, repos]
     min-integrity: none
-  edit: false
-  bash:
-    - python *
-    - python3 *
 
 safe-outputs:
-  create-pull-request:
-    title-prefix: "[agent] "
-    labels: [agent-generated, needs-review]
-    draft: true
-    auto-close-issue: false
-    allowed-files:
-      - src/**
-      - tests/**
-    protected-files: blocked
-    github-token-for-extra-empty-commit: ${{ secrets.GH_AW_CI_TRIGGER_TOKEN }}
+  assign-to-agent:
+    name: "copilot"
+    allowed: [copilot]
+    max: 1
+    target: "triggering"
+    target-repo: "ArnavGupta262/CenEMSAgentTesting"
+    pull-request-repo: "ArnavGupta262/CenEMSAgentTesting"
+    base-branch: "main"
+    custom-instructions: |
+      Implement the approved issue in this repository. Follow AGENTS.md.
+      Limit code changes to src/** and tests/**. Add or update tests, run
+      python -m unittest discover, and open a pull request when complete.
+      Keep the change small and include the issue link and test result in the
+      pull request body.
+    github-token: ${{ secrets.GH_AW_AGENT_TOKEN }}
   add-comment:
     max: 1
     footer: false
@@ -51,44 +49,31 @@ safe-outputs:
 imports:
   - shared/slack-notify.md
 
-timeout-minutes: 25
+timeout-minutes: 12
 ---
 
-# CenEMS Implementation Agent
+# CenEMS Copilot Assignment Agent
 
-You are the implementation agent for approved issue #${{ github.event.issue.number }}.
+You are the assignment agent for approved issue
+#${{ github.event.issue.number }}.
 
 ## Guardrails
 
-- Only implement after the `agent-approved` label is present.
-- Modify only `src/**` and `tests/**`.
-- Do not modify `.github/**`, `AGENTS.md`, `README.md`, dependency manifests, or secrets.
-- Keep the PR focused on the issue request.
-- Use shell commands to inspect and update files. Do not use the Edit tool.
-- Run `python -m unittest discover` before creating the PR.
+- Only act after the `agent-approved` label is present.
+- Read the issue and the `<!-- agent-plan -->` comment.
+- Do not modify repository files yourself.
+- Use `assign-to-agent` to assign the triggering issue to the `copilot` agent.
+- Use `add-comment` to tell maintainers that Copilot cloud agent was assigned,
+  or explain why assignment was unsafe.
+- Call `slack-notify` with a short message including the issue URL.
 
 ## Steps
 
-1. Read issue #${{ github.event.issue.number }}, including the `<!-- agent-plan -->`
-   comment if present.
-2. Inspect `AGENTS.md`, `src/`, and `tests/`.
-3. Implement the smallest complete fix or enhancement that satisfies the issue.
-4. Add or update tests that prove the behavior.
-5. Run `python -m unittest discover`.
-6. Use `create-pull-request` to open a draft PR.
-7. Use `add-comment` on the issue with a concise implementation summary and test
-   result.
-8. Call `slack-notify` saying the implementation run completed and a draft PR
-   was requested for the issue. Include the issue URL.
-
-## PR Requirements
-
-The PR body must include:
-
-- Issue link.
-- Summary of changed behavior.
-- Tests run and result.
-- Any remaining review notes.
-
-If the request cannot be completed within the allowed files, do not create a PR.
-Comment on the issue explaining what blocked the implementation.
+1. Read issue #${{ github.event.issue.number }}, its labels, and comments.
+2. Confirm the issue still has `automation`, `agent-plan-ready`, and
+   `agent-approved`.
+3. If the issue is approved and suitable, use `assign-to-agent` for the
+   triggering issue.
+4. Use `add-comment` with a concise status update.
+5. Call `slack-notify` saying the approved issue was delegated to Copilot cloud
+   agent.
