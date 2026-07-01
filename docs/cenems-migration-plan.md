@@ -139,9 +139,9 @@ Create `CenEMS Automation Agent` (org-owned):
 - Store `APP_ID` + `APP_PRIVATE_KEY` as org/hub secrets; mint installation
   tokens at runtime (e.g. `actions/create-github-app-token`) and pass as the
   `github-token` on safe-outputs.
-Why: no user binding (kills the ToastyPencil-class attribution problem
-permanently), short-lived tokens, scoped, rotatable, auditable — the correct
-production identity (D6).
+Why: no user binding (commits are attributed to a scoped bot identity rather
+than any personal user account), short-lived tokens, scoped, rotatable,
+auditable — the correct production identity (D6).
 
 ### 5.2 Secret inventory
 | Secret | Level | Purpose | Rotation |
@@ -271,7 +271,7 @@ Open the `[Medium][Automation]` tech-debt issue (per AGENTS.md policy) and:
 | Cross-repo token sprawl (Phase B) | Med | Broad blast radius | GitHub App, per-repo install, least privilege |
 | Cost overrun | Low/Med | $$ | Budgets, caps, alerts, Haiku for cheap stages |
 | Lockfile drift | Low | Runs blocked | CI check: `gh aw compile` must produce no diff (D11) |
-| Author misattribution | Low | Provenance | App identity (no user binding) — fixes the ToastyPencil class of issue |
+| Author misattribution | Low | Provenance | GitHub App identity: commits attributed to a scoped bot, never a personal user account |
 
 ---
 
