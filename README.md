@@ -28,7 +28,10 @@ human-approved, **Claude-powered** issue-to-PR loop.
   trade-offs and the recommendation.
 - `docs/decision-record.md` — an ADR-style log of every decision and its
   justification.
-- `docs/cenems-integration-plan.md` — the full plan to roll this into CenEMS.
+- `docs/cenems-migration-plan.md` — the comprehensive, executable plan to bring
+  this into CenEMS (gap analysis, GitHub App auth, model/tier/cost, security,
+  phased rollout, rollback). Supersedes the overview below.
+- `docs/cenems-integration-plan.md` — earlier high-level integration overview.
 - `docs/secrets-and-setup.md` — exactly which keys/tokens/secrets are needed and
   how to create them safely.
 
