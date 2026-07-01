@@ -56,6 +56,15 @@ Focus on correctness, tests, maintainability, and whether the PR satisfies the
 linked issue and agent plan. Prioritize actionable feedback over style opinions.
 You must not modify code and you must not approve the PR.
 
+## Output Rules
+
+- The only valid `submit-pull-request-review` events are `COMMENT` and
+  `REQUEST_CHANGES`.
+- Use `REQUEST_CHANGES` only when the implementation should be fixed before
+  merge.
+- Use `COMMENT` when no blocking issues are found.
+- `APPROVE` is forbidden even when the PR is correct or ready for human review.
+
 ## Steps
 
 1. Read the pull request, changed files, linked issue, and existing comments.

@@ -189,6 +189,20 @@ workspace so it can be disabled/rotated independently.
 **Why:** CenEMS's stated non-negotiable — no secret leakage. Also lets the pilot
 be torn down cleanly.
 
+### D17 — Reviewer comments or requests changes; it never approves
+**Status:** Adopted (pilot)
+**Context:** The post-fix review in the live test found no issues, but the agent
+attempted to emit a `submit-pull-request-review` event of `APPROVE` before
+posting the intended summary comment. The safe-output configuration correctly
+blocked `APPROVE`, but that made the review run fail.
+**Decision:** Keep `allowed-events: [COMMENT, REQUEST_CHANGES]` and make the
+prompt explicitly forbid `APPROVE`, even when the PR is correct.
+**Why:** Approval is a human governance action in this pilot. The automated
+reviewer should supply evidence and feedback, not satisfy a protected-branch
+approval requirement.
+**Consequences:** Clean PRs receive a review comment and maintainer-ready
+summary. Blocking findings still use `REQUEST_CHANGES`.
+
 ---
 
 ## Tech debt / deliberate compromises tracked
@@ -199,10 +213,8 @@ CenEMS repo:
 
 1. **[Low][Automation] Interim same-vendor review (D7).** Review runs on Claude
    until `OPENAI_API_KEY` exists; flip to Codex.
-2. **[Low][Automation] Model ids unpinned (D14).** Pin per-workflow models once
-   cost/quality is measured.
-3. **[Medium][Automation] `.agents/codex-agent.yml` validation commands are
+2. **[Medium][Automation] `.agents/codex-agent.yml` validation commands are
    `npm`, but CenEMS is a Python monorepo.** The config's
    `lint/test/build: npm ...` will not validate CenEMS services; must be
    corrected during integration (see `cenems-integration-plan.md`).
-4. **[Low][Automation] No lockfile-drift CI check yet (D11).**
+3. **[Low][Automation] No lockfile-drift CI check yet (D11).**
