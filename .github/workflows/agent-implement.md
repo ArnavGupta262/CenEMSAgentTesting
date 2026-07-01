@@ -1,7 +1,7 @@
 ---
 description: |
-  Assigns an approved automation issue to the GitHub Copilot cloud agent so it
-  can implement the task and open a pull request.
+  Implements an approved automation issue with the Claude engine and opens a
+  draft pull request containing the change and passing tests.
 
 on:
   issues:
@@ -13,34 +13,25 @@ permissions:
   contents: read
   issues: read
   pull-requests: read
-  actions: read
-  copilot-requests: write
 
 engine:
-  id: copilot
-  model: gpt-4o-mini
+  id: claude
+  max-turns: 30
 network: defaults
 
 tools:
+  edit:
+  bash: ["python*", "python3*"]
   github:
     toolsets: [issues, repos]
-    min-integrity: none
 
 safe-outputs:
-  assign-to-agent:
-    name: "copilot"
-    allowed: [copilot]
-    max: 1
-    target: "triggering"
-    target-repo: "ArnavGupta262/CenEMSAgentTesting"
-    pull-request-repo: "ArnavGupta262/CenEMSAgentTesting"
-    base-branch: "main"
-    custom-instructions: |
-      Implement the approved issue in this repository. Follow AGENTS.md.
-      Limit code changes to src/** and tests/**. Add or update tests, run
-      python -m unittest discover, and open a pull request when complete.
-      Keep the change small and include the issue link and test result in the
-      pull request body.
+  create-pull-request:
+    draft: true
+    title-prefix: "[agent] "
+    labels: [agent-generated, automation]
+    # A PAT/GitHub App token (not the default GITHUB_TOKEN) is required so the
+    # opened PR triggers the review workflow. See docs/secrets-and-setup.md.
     github-token: ${{ secrets.GH_AW_AGENT_TOKEN }}
   add-comment:
     max: 1
@@ -49,31 +40,37 @@ safe-outputs:
 imports:
   - shared/slack-notify.md
 
-timeout-minutes: 12
+timeout-minutes: 20
 ---
 
-# CenEMS Copilot Assignment Agent
+# CenEMS Implementation Agent
 
-You are the assignment agent for approved issue
-#${{ github.event.issue.number }}.
+You are the implementation agent for approved issue
+#${{ github.event.issue.number }}. You write the code yourself in this runner;
+you do **not** delegate to any other agent.
 
-## Guardrails
+## Guardrails (follow `AGENTS.md`)
 
-- Only act after the `agent-approved` label is present.
-- Read the issue and the `<!-- agent-plan -->` comment.
-- Do not modify repository files yourself.
-- Use `assign-to-agent` to assign the triggering issue to the `copilot` agent.
-- Use `add-comment` to tell maintainers that Copilot cloud agent was assigned,
-  or explain why assignment was unsafe.
-- Call `slack-notify` with a short message including the issue URL.
+- Only act when the issue has `automation`, `agent-plan-ready`, and
+  `agent-approved`. If any is missing, add a comment explaining why and stop.
+- Limit code changes to `src/**` and `tests/**`. Never touch `.github/`,
+  `AGENTS.md`, or anything secret-related.
+- Keep the change small, focused, and reviewable.
 
 ## Steps
 
-1. Read issue #${{ github.event.issue.number }}, its labels, and comments.
-2. Confirm the issue still has `automation`, `agent-plan-ready`, and
-   `agent-approved`.
-3. If the issue is approved and suitable, use `assign-to-agent` for the
-   triggering issue.
-4. Use `add-comment` with a concise status update.
-5. Call `slack-notify` saying the approved issue was delegated to Copilot cloud
-   agent.
+1. Read issue #${{ github.event.issue.number }}, its labels, and the
+   `<!-- agent-plan -->` comment produced by the planning agent.
+2. Implement the smallest change that satisfies the issue and the agreed plan,
+   editing only files under `src/**` and `tests/**`.
+3. Add or update tests, then run `python -m unittest discover` and confirm it
+   passes. If it does not pass, fix the code until it does.
+4. Use `create-pull-request` to open a **draft** PR. The PR body must include:
+   the issue link (`Closes #${{ github.event.issue.number }}`), a short summary
+   of the change, and the test result.
+5. Use `add-comment` to tell maintainers the draft PR was opened, or to explain
+   why no PR could be produced.
+6. Call `slack-notify` with a short message including the issue URL and, if a PR
+   was opened, the PR URL.
+
+Do not mark the PR ready for review; a human maintainer does that after review.

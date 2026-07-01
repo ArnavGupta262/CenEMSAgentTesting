@@ -1,33 +1,31 @@
 ---
 description: |
-  Reviews agent-generated pull requests with Codex and submits inline or summary
-  feedback for the implementation agent.
+  Reviews agent-generated pull requests and posts inline + summary feedback for
+  the implementation agent.
+
+  ENGINE: runs on Claude for the pilot (single-key setup). To move code review
+  to Codex, change `engine.id` below from `claude` to `codex` and add the
+  `OPENAI_API_KEY` secret (see docs/decision-record.md, D7).
 
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
 
-if: "startsWith(github.event.pull_request.title, '[agent]') || github.event.pull_request.user.login == 'copilot-swe-agent' || github.event.pull_request.user.login == 'github-copilot[bot]'"
+if: "startsWith(github.event.pull_request.title, '[agent]') || contains(github.event.pull_request.labels.*.name, 'agent-generated')"
 
 permissions:
   contents: read
   pull-requests: read
-  actions: read
-  copilot-requests: write
 
 engine:
-  id: copilot
-  model: gpt-4o-mini
+  id: claude
 network: defaults
 
 tools:
   github:
     toolsets: [pull_requests, repos]
-    min-integrity: none
   edit: false
-  bash:
-    - python *
-    - python3 *
+  bash: ["python*", "python3*"]
 
 safe-outputs:
   create-pull-request-review-comment:
@@ -53,6 +51,7 @@ You are the automatic code reviewer for agent-generated PR
 
 Focus on correctness, tests, maintainability, and whether the PR satisfies the
 linked issue and agent plan. Prioritize actionable feedback over style opinions.
+You must not modify code and you must not approve the PR.
 
 ## Steps
 
