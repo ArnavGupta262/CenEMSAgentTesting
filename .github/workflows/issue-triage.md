@@ -17,7 +17,7 @@ engine:
   id: claude
   # Pinned to Haiku: high tokens/min + low cost, ample for planning. gh-aw's
   # default is Opus, which 429s on low-tier accounts (see decision-record.md D14).
-  model: claude-haiku-4-5
+  model: claude-haiku-4-5-20251001
 network: defaults
 
 tools:
