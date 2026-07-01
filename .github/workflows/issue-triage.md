@@ -1,7 +1,8 @@
 ---
 description: |
-  Plans newly opened automation issues, posts a maintainer-facing plan, labels
-  the issue as ready for approval, and notifies Slack.
+  Plans newly opened automation issues with the Claude engine, posts a
+  maintainer-facing plan, labels the issue as ready for approval, and notifies
+  Slack.
 
 on:
   issues:
@@ -11,17 +12,14 @@ permissions:
   contents: read
   issues: read
   pull-requests: read
-  copilot-requests: write
 
 engine:
-  id: copilot
-  model: gpt-4o-mini
+  id: claude
 network: defaults
 
 tools:
   github:
-    toolsets: [issues, labels, repos]
-    min-integrity: none
+    toolsets: [issues, repos]
 
 safe-outputs:
   add-comment:
@@ -41,12 +39,13 @@ timeout-minutes: 12
 You are the planning agent for the CenEMS agent pilot.
 
 Only act when issue #${{ github.event.issue.number }} has the `automation` label.
-If the issue does not have that label, call `noop` with a short explanation and stop.
+If the issue does not have that label, take no action (post no comment, add no
+labels, send no Slack message) and stop.
 
 ## Goal
 
 Create a precise implementation plan that a human can review before allowing an
-AI coding agent to open a PR.
+AI coding agent to open a PR. You must not modify any code.
 
 ## Steps
 

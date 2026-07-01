@@ -70,7 +70,7 @@ jobs:
         env:
           GH_AW_SLASH_ROUTING: '{"agent-fix":[{"workflow":"agent-fix","events":["discussion","discussion_comment","issue_comment","issues","pull_request","pull_request_comment","pull_request_review_comment"],"ai_reaction":"eyes","status_comment":true}]}'
           GH_AW_LABEL_ROUTING: '{}'
-          GH_AW_HELP_COMMANDS: '[{"command":"agent-fix","description":"Re-assigns an agent-generated pull request to GitHub Copilot cloud agent when\na maintainer comments /agent-fix.","centralized":true,"decentralized":false,"source_file":"agent-fix"}]'
+          GH_AW_HELP_COMMANDS: '[{"command":"agent-fix","description":"Applies review feedback to an agent-generated pull request using the Claude\nengine when a maintainer comments /agent-fix, then pushes the fix to the PR\nbranch.","centralized":true,"decentralized":false,"source_file":"agent-fix"}]'
           GH_AW_HELP_COMMAND_ENABLED: 'true'
           GH_AW_SLASH_COMMAND_DOCS_URL: 'https://github.github.com/gh-aw/reference/command-triggers/'
         with:
