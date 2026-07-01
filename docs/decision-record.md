@@ -153,13 +153,21 @@ existing `trigger-issue-automation.yml` → `Central-EMS/automation-repo` dispat
 **Why:** Fast iteration now; one maintained, auditable hub at scale. Detailed in
 `cenems-integration-plan.md`.
 
-### D14 — Omit explicit `model:`; use the engine default now, tune later
-**Status:** Adopted (pilot)
-**Decision:** Do not pin a model string in the workflows initially.
-**Why:** A wrong/aliased model id fails at runtime; the engine default (latest
-Claude) is reliable for a first live test. Cost tuning (e.g. a smaller model for
-read-only triage, a stronger one for implementation/review) is a documented
-follow-up, not a blocker.
+### D14 — Pin `model: claude-haiku-4-5` for the pilot (revised after live test)
+**Status:** Adopted (pilot) — *revised*
+**Context:** Initially we omitted `model:` to use the engine default. The first
+live run proved this wrong: gh-aw's Claude default resolves to **`claude-opus-4-8`**,
+and a new/low-tier Anthropic account has a **10,000 input-tokens-per-minute**
+limit on Opus, so every agent request was rejected with **HTTP 429** before doing
+any work (all retries hit the same ceiling).
+**Decision:** Pin `model: claude-haiku-4-5` on all four workflows.
+**Why:** Haiku has far higher tokens-per-minute limits and much lower cost, and
+is more than capable of this loop. Pinning also makes runs deterministic and
+removes the dependency on whatever the engine default happens to be.
+**Consequences / follow-up:** For production, raise implementation/review to
+**Sonnet** once the Anthropic usage tier is lifted (adding a credit balance moves
+the account past Tier 1 and raises the per-minute limits). Triage can stay on
+Haiku. Tracked as tech debt below.
 
 ### D15 — This session touches the pilot repo only
 **Status:** Adopted
