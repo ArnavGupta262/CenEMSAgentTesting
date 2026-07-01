@@ -19,6 +19,9 @@ permissions:
 
 engine:
   id: claude
+  # Pinned to Haiku for the pilot (high tokens/min, low cost). Raise to Sonnet
+  # for production once the Anthropic tier is lifted (see decision-record.md D14).
+  model: claude-haiku-4-5
 network: defaults
 
 tools:
